@@ -29,6 +29,21 @@ namespace MultiThreadServer
                 Console.WriteLine("Конфигурация многопоточного сервера:\nIP-адрес: "
                     + localAddr.ToString() + "\nПорт: " + port.ToString() + "\nПотоки: " + MaxThreadsCount.ToString() +
                     "\nСервер запущен!\n");
+                //Запускаем сервер и начинаем слушать клиентов
+                server.Start();
+                //Принимаем  клиентов в бесконечном цикле
+                while(true)
+                {
+                    Console.WriteLine("Ожидание соединения...");
+                    ThreadPool.QueueUserWorkItem(ClientProcessing, server.AcceptTcpClient());
+                    //Выводим информацию о подключении
+                    counter++;
+                    Console.Write("\nСоединение № "+ counter.ToString() + " !");
+                }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine
             }
         }
     }
