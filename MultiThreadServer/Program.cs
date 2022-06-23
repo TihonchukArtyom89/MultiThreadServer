@@ -11,6 +11,28 @@ namespace MultiThreadServer
 {
     class ExampleTcpListener
     {
+        static void ClientProcessing(object client_obj)
+        {//Буфер для принимаемых данных
+            Byte[] bytes = new Byte[256];
+            String data = null;
+            TcpClient client = client_obj as TcpClient;//??
+            data = null;
+            //Получаем информацию от клиента
+            NetworkStream stream = client.GetStream();
+            int i;
+            //Принимаем данные от клиента в цикле пока не дойдём до конца
+            while((i=stream.Read(bytes,0,bytes.Length))!=0)
+            {//Преобразуем данные в строку ASCII
+                data = System.Text.Encoding.ASCII.GetString(bytes, 0, i);
+                //Преобразуем строку к верхнему регистру
+                data = data.ToUpper();
+                //Преобразуем полученную строку в массив байт
+                byte[] msg = System.Text.Encoding.ASCII.GetBytes(data);
+                //Отправляем данные обратно клиенту(ответ)
+                stream.Write(msg, 0, msg.Length);
+            }
+
+        }
         static void Main(string[] args)
         {
             TcpListener server = null;
@@ -43,7 +65,14 @@ namespace MultiThreadServer
             }
             catch(Exception ex)
             {
-                Console.WriteLine
+                Console.WriteLine("SocketException: {0}", ex);
+            }
+            finally
+            {
+                //Останавливаем сервер
+                server.Stop();
+                Console.WriteLine("\nНажмите Enter...");
+                Console.Read();
             }
         }
     }
